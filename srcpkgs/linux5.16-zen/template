@@ -1,17 +1,18 @@
-# Template file for 'linux5.16'
-pkgname=linux5.16
+# Template file for 'linux5.16-zen'
+_zenrev=1
+pkgname=linux5.16-zen
 version=5.16.11
 revision=1
 wrksrc="linux-${version%.*}"
-short_desc="Linux kernel and modules (${version%.*} series)"
-maintainer="Érico Nogueira <ericonr@disroot.org>"
+short_desc="Linux kernel and modules (${version%.*} with Zen patches series)"
+maintainer="Patrick Shaw <mail@patrickshaw.me>"
 license="GPL-2.0-only"
 homepage="https://www.kernel.org"
-distfiles="https://cdn.kernel.org/pub/linux/kernel/v5.x/linux-${version%.*}.tar.xz
- https://cdn.kernel.org/pub/linux/kernel/v5.x/patch-${version}.xz"
+
+distfiles="https://cdn.kernel.org/pub/linux/kernel/v5.x/linux-${version%.*}.tar.xz https://github.com/zen-kernel/zen-kernel/releases/download/v${version}-zen${_zenrev}/v${version}-zen${_zenrev}.patch.xz"
 checksum="027d7e8988bb69ac12ee92406c3be1fe13f990b1ca2249e226225cd1573308bb
- ef7b5e4f1b043a58fcece6e3f5d9e5425db7fb2a1abddc64c5094b93931bab37"
-skip_extraction="patch-${version}.xz"
+ 37d14b8f0ea296bfa97a9c0d2ab574a236b6fab7a123973d99c464b803022510"
+skip_extraction="v${version}-zen${_zenrev}.patch.xz"
 python_version=3
 
 # XXX Restrict archs until a proper <arch>-dotconfig is available in FILESDIR.
@@ -26,7 +27,7 @@ preserve=yes
 hostmakedepends="tar xz bc elfutils-devel flex gmp-devel kmod libmpc-devel
  openssl-devel perl uboot-mkimage cpio pahole python3"
 
-_kernver="${version}_${revision}"
+_kernver="${version}-zen${_zenrev}_${revision}"
 triggers="kernel-hooks"
 kernel_hooks_version="${_kernver}"
 
@@ -53,7 +54,7 @@ if [ "$CROSS_BUILD" ]; then
 fi
 
 pre_patch() {
-	xzcat $XBPS_SRCDISTDIR/$pkgname-$version/patch-${version}.xz | patch -Np1
+	xzcat $XBPS_SRCDISTDIR/$pkgname-$version/v${version}-zen${_zenrev}.patch.xz | patch -Np1
 }
 
 do_configure() {
@@ -301,7 +302,7 @@ do_install() {
 	# ... and run depmod again.
 	depmod -b ${DESTDIR}/usr -F System.map ${_kernver}
 }
-linux5.16-headers_package() {
+linux5.16-zen-headers_package() {
 	preserve=yes
 	nostrip=yes
 	noshlibprovides=yes
@@ -311,7 +312,7 @@ linux5.16-headers_package() {
 		vmove usr/lib/modules/${_kernver}/build
 	}
 }
-linux5.16-dbg_package() {
+linux5.16-zen-dbg_package() {
 	preserve=yes
 	nostrip=yes
 	noverifyrdeps=yes
