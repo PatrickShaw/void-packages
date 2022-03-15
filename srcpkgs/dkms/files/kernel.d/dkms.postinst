@@ -12,6 +12,7 @@ if [ ! -x /usr/bin/dkms ]; then
 	exit 0
 fi
 
+echo $(ls /lib/modules/)
 if [ ! -e /lib/modules/${VERSION}/build/include ] ; then
 	echo "WARNING: cannot build DKMS modules! missing kernel headers package for ${VERSION}."
 	exit 0
